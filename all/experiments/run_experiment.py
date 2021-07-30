@@ -22,6 +22,7 @@ def run_experiment(
 
     for env in envs:
         for preset_builder in agents:
+            env.seed(0)
             preset = preset_builder.env(env).build()
             make_experiment = get_experiment_type(preset)
             experiment = make_experiment(

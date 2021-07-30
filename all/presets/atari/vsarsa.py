@@ -24,7 +24,7 @@ default_hyperparameters = {
     "final_exploration_step": 250000,
     "test_exploration": 0.001,
     # Parallel actors
-    "n_envs": 64,
+    "n_envs": 1,
     # Model construction
     "model_constructor": nature_ddqn
 }

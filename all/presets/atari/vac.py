@@ -22,7 +22,7 @@ default_hyperparameters = {
     "clip_grad": 0.5,
     "value_loss_scaling": 0.25,
     # Parallel actors
-    "n_envs": 16,
+    "n_envs": 1,
     # Model construction
     "feature_model_constructor": nature_features,
     "value_model_constructor": nature_value_head,
