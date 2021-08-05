@@ -23,7 +23,7 @@ default_hyperparameters = {
     "entropy_loss_scaling": 0.01,
     "value_loss_scaling": 0.5,
     # Batch settings
-    "n_envs": 1,
+    "n_envs": 16,
     "n_steps": 5,
     # Model construction
     "feature_model_constructor": nature_features,
