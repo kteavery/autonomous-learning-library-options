@@ -2,6 +2,7 @@ import numpy as np
 import torch
 from torch.nn.functional import mse_loss
 from ._agent import Agent
+from torch.nn import functional as F
 
 
 class DQN(Agent):
@@ -85,4 +86,4 @@ class DQNTestAgent(Agent):
         self.policy = policy
 
     def act(self, state):
-        return self.policy.eval(state)
+        return self.policy.eval(state), F.softmax(self.policy.q.eval(state)) 

@@ -107,5 +107,5 @@ class A2CTestAgent(Agent, ParallelAgent):
         self.policy = policy
 
     def act(self, state):
-        return self.policy.eval(self.features.eval(state)).sample(), self.policy.eval(self.features.eval(state))
+        return self.policy.eval(self.features.eval(state)).sample(), self.policy.eval(self.features.eval(state)).probs
 
