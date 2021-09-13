@@ -1,4 +1,5 @@
 from .c51 import C51, C51TestAgent
+from torch.nn import functional as F
 
 
 class Rainbow(C51):

@@ -3,6 +3,8 @@ import numpy as np
 from all.logging import DummyWriter
 from ._agent import Agent
 
+from torch.nn import functional as F
+
 
 class C51(Agent):
     """
@@ -126,7 +128,10 @@ class C51TestAgent(Agent):
         self.exploration = exploration
 
     def act(self, state):
-        if np.random.rand() < self.exploration:
-            return np.random.randint(0, self.n_actions)
         q_values = (self.q_dist(state) * self.q_dist.atoms).sum(dim=-1)
-        return torch.argmax(q_values, dim=-1), q_values
+        normalized_q_values = F.softmax(q_values, dim=0)
+
+        if np.random.rand() < self.exploration:
+            return np.random.randint(0, self.n_actions), normalized_q_values
+
+        return torch.argmax(q_values, dim=-1), normalized_q_values
