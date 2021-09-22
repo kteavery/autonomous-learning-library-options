@@ -68,6 +68,7 @@ class ParallelEnvExperiment(Experiment):
         state_array = self._env.reset()
         start_time = time.time()
         completed_frames = 0
+        temp = 100
         while not self._done(frames, episodes):
             action = self._agent.act(state_array)
             state_array = self._env.step(action)
@@ -75,6 +76,11 @@ class ParallelEnvExperiment(Experiment):
             episodes_completed = state_array.done.type(torch.IntTensor).sum().item()
             completed_frames += num_envs
             returns += state_array.reward.cpu().detach().numpy()
+            
+            if completed_frames == temp: #checkpointing
+                save("preset"+str(temp))
+                temp *= 10
+
             if episodes_completed > 0:
                 dones = state_array.done.cpu().detach().numpy()
                 cur_time = time.time()

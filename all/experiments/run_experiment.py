@@ -35,8 +35,16 @@ def run_experiment(
                 write_loss=write_loss,
                 writer=writer
             )
+            # temp = 100
+            # experiment.train(frames=temp)
+            # experiment.save("preset"+str(temp)) 
+            # while temp < frames:
+            #     checkpoint = torch.load("preset"+str(temp))
+            #     temp *= 10
+            #     experiment.train()
+
             experiment.train(frames=frames)
-            experiment.save()
+            experiment.save() 
             experiment.test(episodes=test_episodes)
             experiment.close()
 
