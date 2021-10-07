@@ -77,8 +77,11 @@ class ParallelEnvExperiment(Experiment):
             completed_frames += num_envs
             returns += state_array.reward.cpu().detach().numpy()
             
-            if completed_frames == temp: #checkpointing
-                save("preset"+str(temp))
+            #print(self._frame)
+            #print(temp)
+            if self._frame >= temp: # checkpointing
+                #print(temp)
+                Experiment.save(self,"preset"+str(temp))
                 temp *= 10
 
             if episodes_completed > 0:
