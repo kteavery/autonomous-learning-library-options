@@ -4,15 +4,15 @@ from all.presets import ParallelPreset
 
 
 def run_experiment(
-        agents,
-        envs,
-        frames,
-        logdir='runs',
-        quiet=False,
-        render=False,
-        test_episodes=100,
-        write_loss=True,
-        writer="tensorboard"
+    agents,
+    envs,
+    frames,
+    logdir="runs",
+    quiet=False,
+    render=False,
+    test_episodes=100,
+    write_loss=True,
+    writer="tensorboard",
 ):
     if not isinstance(agents, list):
         agents = [agents]
@@ -33,18 +33,11 @@ def run_experiment(
                 quiet=quiet,
                 render=render,
                 write_loss=write_loss,
-                writer=writer
+                writer=writer,
             )
-            # temp = 100
-            # experiment.train(frames=temp)
-            # experiment.save("preset"+str(temp)) 
-            # while temp < frames:
-            #     checkpoint = torch.load("preset"+str(temp))
-            #     temp *= 10
-            #     experiment.train()
 
             experiment.train(frames=frames)
-            experiment.save() 
+            experiment.save()
             experiment.test(episodes=test_episodes)
             experiment.close()
 
