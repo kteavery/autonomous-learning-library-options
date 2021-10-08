@@ -12,7 +12,8 @@ def run_experiment(
         render=False,
         test_episodes=100,
         write_loss=True,
-        writer="tensorboard"
+        writer="tensorboard",
+        loadfile=""
 ):
     if not isinstance(agents, list):
         agents = [agents]
@@ -23,7 +24,10 @@ def run_experiment(
     for env in envs:
         for preset_builder in agents:
             env.seed(0)
-            preset = preset_builder.env(env).build()
+            if loadfile == "":
+                preset = preset_builder.env(env).build()
+            else:
+                preset = torch.load(loadfile)
             make_experiment = get_experiment_type(preset)
             experiment = make_experiment(
                 preset,
@@ -35,15 +39,8 @@ def run_experiment(
                 write_loss=write_loss,
                 writer=writer
             )
-            # temp = 100
-            # experiment.train(frames=temp)
-            # experiment.save("preset"+str(temp)) 
-            # while temp < frames:
-            #     checkpoint = torch.load("preset"+str(temp))
-            #     temp *= 10
-            #     experiment.train()
 
-            experiment.train(frames=frames)
+            experiment.train(frames=1e7)
             experiment.save() 
             experiment.test(episodes=test_episodes)
             experiment.close()

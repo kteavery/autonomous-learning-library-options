@@ -79,10 +79,7 @@ class Experiment(ABC):
             print('test returns (mean ± sem): {} ± {}'.format(np.mean(returns), stats.sem(returns)))
         self._writer.add_summary('returns-test', np.mean(returns), np.std(returns))
 
-    def save(self):
-        return self._preset.save('{}/preset.pt'.format(self._writer.log_dir))
-
-    def save(self, filename):
+    def save(self, filename="preset"):
         return self._preset.save('{}/{}.pt'.format(self._writer.log_dir, filename))
 
     def close(self):
