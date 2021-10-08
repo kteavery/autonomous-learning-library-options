@@ -1,4 +1,3 @@
-
 import torch
 import time
 import numpy as np
@@ -11,22 +10,24 @@ import gym
 
 
 class ParallelEnvExperiment(Experiment):
-    '''An Experiment object for training and testing agents that use parallel training environments.'''
+    """An Experiment object for training and testing agents that use parallel training environments."""
 
     def __init__(
-            self,
-            preset,
-            env,
-            name=None,
-            train_steps=float('inf'),
-            logdir='runs',
-            quiet=False,
-            render=False,
-            write_loss=True,
-            writer="tensorboard"
+        self,
+        preset,
+        env,
+        name=None,
+        train_steps=float("inf"),
+        logdir="runs",
+        quiet=False,
+        render=False,
+        write_loss=True,
+        writer="tensorboard",
     ):
         self._name = name if name is not None else preset.name
-        super().__init__(self._make_writer(logdir, self._name, env.name, write_loss, writer), quiet)
+        super().__init__(
+            self._make_writer(logdir, self._name, env.name, write_loss, writer), quiet
+        )
         self._n_envs = preset.n_envs
         if isinstance(env, VectorEnvironment):
             assert self._n_envs == env.num_envs
@@ -68,7 +69,7 @@ class ParallelEnvExperiment(Experiment):
         state_array = self._env.reset()
         start_time = time.time()
         completed_frames = 0
-        temp = 100
+        _checkpoint_threshold = 100
         while not self._done(frames, episodes):
             action = self._agent.act(state_array)
             state_array = self._env.step(action)
@@ -76,10 +77,11 @@ class ParallelEnvExperiment(Experiment):
             episodes_completed = state_array.done.type(torch.IntTensor).sum().item()
             completed_frames += num_envs
             returns += state_array.reward.cpu().detach().numpy()
-            
-            if self._frame >= temp: # checkpointing
-                Experiment.save(self, "preset"+str(temp))
-                temp *= 10
+
+            if self._frame >= _checkpoint_threshold:  # checkpointing
+                print("Saving Checkpoint")
+                Experiment.save(self, "preset" + str(_checkpoint_threshold))
+                _checkpoint_threshold *= 10
 
             if episodes_completed > 0:
                 dones = state_array.done.cpu().detach().numpy()
@@ -108,7 +110,7 @@ class ParallelEnvExperiment(Experiment):
 
         while len(test_returns) < episodes:
             # step the agent and environments
-            actions = test_agent.act(states)
+            actions, probs = test_agent.act(states)
             states = self._env.step(actions)
             returns += states.reward
 
@@ -119,7 +121,7 @@ class ParallelEnvExperiment(Experiment):
                         episode_return = returns[i].item()
                         test_returns.append(episode_return)
                         self._log_test_episode(len(test_returns), episode_return)
-                    returns[i] = 0.
+                    returns[i] = 0.0
                     episodes_started += 1
                     if episodes_started > episodes:
                         should_record[i] = False
@@ -132,5 +134,9 @@ class ParallelEnvExperiment(Experiment):
 
     def _make_writer(self, logdir, agent_name, env_name, write_loss, writer):
         if writer == "comet":
-            return CometWriter(self, agent_name, env_name, loss=write_loss, logdir=logdir)
-        return ExperimentWriter(self, agent_name, env_name, loss=write_loss, logdir=logdir)
+            return CometWriter(
+                self, agent_name, env_name, loss=write_loss, logdir=logdir
+            )
+        return ExperimentWriter(
+            self, agent_name, env_name, loss=write_loss, logdir=logdir
+        )

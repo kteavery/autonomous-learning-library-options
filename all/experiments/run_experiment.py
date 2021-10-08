@@ -37,11 +37,11 @@ def run_experiment(
                 quiet=quiet,
                 render=render,
                 write_loss=write_loss,
-                writer=writer
+                writer=writer,
             )
 
-            experiment.train(frames=1e7)
-            experiment.save() 
+            experiment.train(frames=frames)
+            experiment.save()
             experiment.test(episodes=test_episodes)
             experiment.close()
 
