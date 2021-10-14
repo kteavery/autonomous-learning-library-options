@@ -6,22 +6,24 @@ from .experiment import Experiment
 
 
 class SingleEnvExperiment(Experiment):
-    '''An Experiment object for training and testing agents that interact with one environment at a time.'''
+    """An Experiment object for training and testing agents that interact with one environment at a time."""
 
     def __init__(
-            self,
-            preset,
-            env,
-            name=None,
-            train_steps=float('inf'),
-            logdir='runs',
-            quiet=False,
-            render=False,
-            write_loss=True,
-            writer="tensorboard"
+        self,
+        preset,
+        env,
+        name=None,
+        train_steps=float("inf"),
+        logdir="runs",
+        quiet=False,
+        render=False,
+        write_loss=True,
+        writer="tensorboard",
     ):
         self._name = name if name is not None else preset.name
-        super().__init__(self._make_writer(logdir, self._name, env.name, write_loss, writer), quiet)
+        super().__init__(
+            self._make_writer(logdir, self._name, env.name, write_loss, writer), quiet
+        )
         self._logdir = logdir
         self._preset = preset
         self._agent = self._preset.agent(writer=self._writer, train_steps=train_steps)
@@ -29,6 +31,7 @@ class SingleEnvExperiment(Experiment):
         self._render = render
         self._frame = 1
         self._episode = 1
+        self._checkpoint_threshold = 100
 
         if render:
             self._env.render(mode="human")
@@ -74,6 +77,14 @@ class SingleEnvExperiment(Experiment):
             returns += state.reward
             self._frame += 1
 
+            if self._frame >= self._checkpoint_threshold:  # checkpointing
+                print("Saving Checkpoint")
+                Experiment.save(self, "preset" + str(int(self._checkpoint_threshold)))
+                if self._frame > 1e7:
+                    self._checkpoint_threshold += 0.5e7
+                else:
+                    self._checkpoint_threshold *= 10
+
         # stop the timer
         end_time = timer()
         fps = (self._frame - start_frame) / (end_time - start_time)
@@ -87,7 +98,7 @@ class SingleEnvExperiment(Experiment):
     def _run_test_episode(self, test_agent):
         # initialize the episode
         state = self._env.reset()
-        action = test_agent.act(state)
+        action, probs = test_agent.act(state)
         returns = 0
 
         # loop until the episode is finished
@@ -95,7 +106,7 @@ class SingleEnvExperiment(Experiment):
             if self._render:
                 self._env.render()
             state = self._env.step(action)
-            action = test_agent.act(state)
+            action, probs = test_agent.act(state)
             returns += state.reward
 
         return returns
@@ -105,5 +116,9 @@ class SingleEnvExperiment(Experiment):
 
     def _make_writer(self, logdir, agent_name, env_name, write_loss, writer):
         if writer == "comet":
-            return CometWriter(self, agent_name, env_name, loss=write_loss, logdir=logdir)
-        return ExperimentWriter(self, agent_name, env_name, loss=write_loss, logdir=logdir)
+            return CometWriter(
+                self, agent_name, env_name, loss=write_loss, logdir=logdir
+            )
+        return ExperimentWriter(
+            self, agent_name, env_name, loss=write_loss, logdir=logdir
+        )

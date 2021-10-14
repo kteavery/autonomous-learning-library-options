@@ -3,6 +3,7 @@ from torch.nn.functional import mse_loss
 from ._agent import Agent
 from ._parallel_agent import ParallelAgent
 from .dqn import DQNTestAgent
+from torch.nn import functional as F
 
 
 class VQN(ParallelAgent):
@@ -58,4 +59,4 @@ class VQNTestAgent(Agent, ParallelAgent):
         self.policy = policy
 
     def act(self, state):
-        return self.policy.eval(state), self.policy.q(state)
+        return self.policy.eval(state), F.softmax(self.policy.q.eval(state), dim=0)
