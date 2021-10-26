@@ -81,7 +81,7 @@ class SingleEnvExperiment(Experiment):
                 print("Saving Checkpoint")
                 Experiment.save(self, "preset" + str(int(self._checkpoint_threshold)))
                 if self._frame > 1e7:
-                    self._checkpoint_threshold += 0.5e7
+                    self._checkpoint_threshold += 1e6
                 else:
                     self._checkpoint_threshold *= 10
 

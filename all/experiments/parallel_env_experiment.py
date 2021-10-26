@@ -81,7 +81,7 @@ class ParallelEnvExperiment(Experiment):
                 print("Saving Checkpoint")
                 Experiment.save(self, "preset" + str(int(_checkpoint_threshold)))
                 if self._frame > 1e7:
-                    _checkpoint_threshold += 0.5e7
+                    _checkpoint_threshold += 1e6
                 else:
                     _checkpoint_threshold *= 10
 
