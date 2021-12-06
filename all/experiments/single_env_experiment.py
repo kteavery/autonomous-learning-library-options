@@ -4,6 +4,8 @@ from .writer import ExperimentWriter, CometWriter
 
 from .experiment import Experiment
 
+import subprocess
+
 
 class SingleEnvExperiment(Experiment):
     """An Experiment object for training and testing agents that interact with one environment at a time."""
@@ -80,6 +82,8 @@ class SingleEnvExperiment(Experiment):
             if self._frame >= self._checkpoint_threshold:  # checkpointing
                 print("Saving Checkpoint")
                 Experiment.save(self, "preset" + str(int(self._checkpoint_threshold)))
+                subprocess.call(["sh", "removeEvents.sh"])
+
                 if self._frame > 1e5:
                     self._checkpoint_threshold += 1e5  # continue by 100k's
                 else:

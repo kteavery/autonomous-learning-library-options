@@ -8,6 +8,8 @@ from all.environments import VectorEnvironment
 from all.agents import ParallelAgent
 import gym
 
+import subprocess
+
 
 class ParallelEnvExperiment(Experiment):
     """An Experiment object for training and testing agents that use parallel training environments."""
@@ -80,6 +82,8 @@ class ParallelEnvExperiment(Experiment):
             if self._frame >= _checkpoint_threshold:  # checkpointing
                 print("Saving Checkpoint")
                 Experiment.save(self, "preset" + str(int(_checkpoint_threshold)))
+                subprocess.call(["sh", "removeEvents.sh"])
+
                 if self._frame > 1e5:
                     _checkpoint_threshold += 1e5  # continue by 100k's
                 else:
