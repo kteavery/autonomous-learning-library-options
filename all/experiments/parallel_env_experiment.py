@@ -71,7 +71,7 @@ class ParallelEnvExperiment(Experiment):
         state_array = self._env.reset()
         start_time = time.time()
         completed_frames = 0
-        _checkpoint_threshold = 100
+        _checkpoint_threshold = 0
         while not self._done(frames, episodes):
             action = self._agent.act(state_array)
             state_array = self._env.step(action)

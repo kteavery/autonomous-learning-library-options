@@ -33,7 +33,7 @@ class SingleEnvExperiment(Experiment):
         self._render = render
         self._frame = 1
         self._episode = 1
-        self._checkpoint_threshold = 100
+        self._checkpoint_threshold = 0
 
         if render:
             self._env.render(mode="human")
