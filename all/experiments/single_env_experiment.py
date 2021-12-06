@@ -80,10 +80,10 @@ class SingleEnvExperiment(Experiment):
             if self._frame >= self._checkpoint_threshold:  # checkpointing
                 print("Saving Checkpoint")
                 Experiment.save(self, "preset" + str(int(self._checkpoint_threshold)))
-                if self._frame > 1e6:
-                    self._checkpoint_threshold += 1e6
+                if self._frame > 1e5:
+                    self._checkpoint_threshold += 1e5  # continue by 100k's
                 else:
-                    self._checkpoint_threshold *= 10
+                    self._checkpoint_threshold += 1e4  # walk up  by 10k's
 
         # stop the timer
         end_time = timer()

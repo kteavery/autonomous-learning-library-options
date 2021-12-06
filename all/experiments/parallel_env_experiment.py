@@ -80,10 +80,10 @@ class ParallelEnvExperiment(Experiment):
             if self._frame >= _checkpoint_threshold:  # checkpointing
                 print("Saving Checkpoint")
                 Experiment.save(self, "preset" + str(int(_checkpoint_threshold)))
-                if self._frame > 1e6:
-                    _checkpoint_threshold += 1e6
+                if self._frame > 1e5:
+                    _checkpoint_threshold += 1e5  # continue by 100k's
                 else:
-                    _checkpoint_threshold *= 10
+                    _checkpoint_threshold += 1e4  # walk up by  10k's
 
             if episodes_completed > 0:
                 dones = state_array.done.cpu().detach().numpy()
