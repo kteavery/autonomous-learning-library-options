@@ -7,26 +7,24 @@ from .run_experiment import run_experiment
 
 # track the number of experiments created
 # in the current process
-ID = {
-    "value": 1
-}
+ID = {"value": 1}
 
 
 class SlurmExperiment:
     def __init__(
-            self,
-            agents,
-            envs,
-            frames,
-            test_episodes=100,
-            write_loss=False,
-            job_name='autonomous-learning-library',
-            script_name='experiment.sh',
-            outdir='out',
-            logdir='runs',
-            loadfile="",
-            nodelist="",
-            sbatch_args=None,
+        self,
+        agents,
+        envs,
+        frames,
+        test_episodes=100,
+        write_loss=False,
+        job_name="autonomous-learning-library",
+        script_name="experiment.sh",
+        outdir="out",
+        logdir="runs",
+        loadfile="",
+        nodelist="",
+        sbatch_args=None,
     ):
         if not isinstance(agents, list):
             agents = [agents]
@@ -63,12 +61,27 @@ class SlurmExperiment:
             self.queue_jobs()
 
     def parse_args(self):
-        parser = argparse.ArgumentParser(description='Run an Atari benchmark.')
-        parser.add_argument('--experiment_id', type=int)
+        parser = argparse.ArgumentParser(description="Run an Atari benchmark.")
+        parser.add_argument("--experiment_id", type=int)
+
+        # TODO: Remove this when commandline arguments for runners.src.run_experiment are no longer needed. Change them accordingly
+        parser.add_argument(
+            "--env",
+            nargs=1,
+            type=str,
+            help="Environment name: SpaceInvaders, Amidar, or Breakout",
+        )
+        parser.add_argument(
+            "--family",
+            nargs=1,
+            type=str,
+            help="Agent family:  a2c,c51, dqn, ddqn, ppo, rainbow, vsarsa, vqn",
+        )
+
         self.args = parser.parse_args()
 
     def run_experiment(self, loadfile=""):
-        task_id = int(os.environ['SLURM_ARRAY_TASK_ID'])
+        task_id = int(os.environ["SLURM_ARRAY_TASK_ID"])
         env = self.envs[int(task_id / len(self.agents))]
         agent = self.agents[task_id % len(self.agents)]
 
@@ -88,45 +101,53 @@ class SlurmExperiment:
         self.run_sbatch_script()
 
     def create_sbatch_script(self):
-        script = open(self.script_name, 'w')
-        script.write('#!/bin/sh\n\n')
+        script = open(self.script_name, "w")
+        script.write("#!/bin/sh\n\n")
         num_experiments = len(self.envs) * len(self.agents)
 
         sbatch_args = {
-            'job-name': self.job_name,
-            'output': os.path.join(self.outdir, 'all_%A_%a.out'),
-            'error': os.path.join(self.outdir, 'all_%A_%a.err'),
-            'array': '0-' + str(num_experiments - 1),
-            'partition': '1080ti-short',
-            'ntasks': 1,
-            'mem-per-cpu': 4000,
-            'gres': 'gpu:1'
+            "job-name": self.job_name,
+            "output": os.path.join(self.outdir, "all_%A_%a.out"),
+            "error": os.path.join(self.outdir, "all_%A_%a.err"),
+            "array": "0-" + str(num_experiments - 1),
+            "partition": "1080ti-short",
+            "ntasks": 1,
+            "mem-per-cpu": 4000,
+            "gres": "gpu:1",
         }
 
         if self.nodelist != "":
-            sbatch_args['nodelist'] = self.nodelist
+            sbatch_args["nodelist"] = self.nodelist
 
         sbatch_args.update(self.sbatch_args)
 
         for key, value in sbatch_args.items():
-            script.write('#SBATCH --' + key + '=' + str(value) + '\n')
-        script.write('\n')
+            script.write("#SBATCH --" + key + "=" + str(value) + "\n")
+        script.write("\n")
 
-        script.write('python ' + sys.argv[0] + ' --experiment_id ' + str(self._id) + '\n')
+        script.write(
+            "python "
+            + sys.argv[0]
+            + " --experiment_id "
+            + str(self._id)
+            + " --env "
+            + str(self.args.env[0])
+            + " --family "
+            + str(self.args.family[0])
+            + "\n"
+        )
         script.close()
-        print('created sbatch script:', self.script_name)
+        print("created sbatch script:", self.script_name)
 
     def make_output_directory(self):
         try:
             os.mkdir(self.outdir)
-            print('Created output directory:', self.outdir)
+            print("Created output directory:", self.outdir)
         except FileExistsError:
-            print('Output directory already exists:', self.outdir)
+            print("Output directory already exists:", self.outdir)
 
     def run_sbatch_script(self):
         result = subprocess.run(
-            ['sbatch', self.script_name],
-            stdout=subprocess.PIPE,
-            check=True
+            ["sbatch", self.script_name], stdout=subprocess.PIPE, check=True
         )
-        print(result.stdout.decode('utf-8').rstrip())
+        print(result.stdout.decode("utf-8").rstrip())
