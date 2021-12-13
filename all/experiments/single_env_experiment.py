@@ -84,7 +84,9 @@ class SingleEnvExperiment(Experiment):
                 Experiment.save(self, "preset" + str(int(self._checkpoint_threshold)))
                 subprocess.call(["sh", "removeEvents.sh"])
 
-                if self._frame > 1e5:
+                if self._frame >= 1e6:
+                    self._checkpoint_threshold += 1e6  # continue by 1M's
+                elif self._frame >= 1e5:
                     self._checkpoint_threshold += 1e5  # continue by 100k's
                 else:
                     self._checkpoint_threshold += 1e4  # walk up  by 10k's

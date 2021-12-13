@@ -84,10 +84,12 @@ class ParallelEnvExperiment(Experiment):
                 Experiment.save(self, "preset" + str(int(_checkpoint_threshold)))
                 subprocess.call(["sh", "removeEvents.sh"])
 
-                if self._frame > 1e5:
+                if self._frame >= 1e6:
+                    _checkpoint_threshold += 1e6  # continue by 1M's
+                elif self._frame >= 1e5:
                     _checkpoint_threshold += 1e5  # continue by 100k's
                 else:
-                    _checkpoint_threshold += 1e4  # walk up by  10k's
+                    _checkpoint_threshold += 1e4  # walk up  by 10k's
 
             if episodes_completed > 0:
                 dones = state_array.done.cpu().detach().numpy()
