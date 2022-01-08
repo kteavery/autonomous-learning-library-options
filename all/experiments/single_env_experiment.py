@@ -50,14 +50,16 @@ class SingleEnvExperiment(Experiment):
         while not self._done(frames, episodes):
             self._run_training_episode()
 
-    def test(self, episodes=100):
+    def test(self, episodes=100, log=True):
         test_agent = self._preset.test_agent()
         returns = []
         for episode in range(episodes):
             episode_return = self._run_test_episode(test_agent)
             returns.append(episode_return)
-            self._log_test_episode(episode, episode_return)
-        self._log_test(returns)
+            if log:
+                self._log_test_episode(episode, episode_return)
+        if log:
+            self._log_test(returns)
         return returns
 
     def _run_training_episode(self):

@@ -103,7 +103,7 @@ class ParallelEnvExperiment(Experiment):
                         returns[i] = 0
             self._episode += episodes_completed
 
-    def test(self, episodes=100):
+    def test(self, episodes=100, log=True):
         test_agent = self._preset.parallel_test_agent()
 
         # Note that we need to record the first N episodes that are STARTED,
@@ -128,13 +128,14 @@ class ParallelEnvExperiment(Experiment):
                     if should_record[i] and len(test_returns) < episodes:
                         episode_return = returns[i].item()
                         test_returns.append(episode_return)
-                        self._log_test_episode(len(test_returns), episode_return)
+                        if log:
+                            self._log_test_episode(len(test_returns), episode_return)
                     returns[i] = 0.0
                     episodes_started += 1
                     if episodes_started > episodes:
                         should_record[i] = False
-
-        self._log_test(test_returns)
+        if log:
+            self._log_test(test_returns)
         return test_returns
 
     def _done(self, frames, episodes):
