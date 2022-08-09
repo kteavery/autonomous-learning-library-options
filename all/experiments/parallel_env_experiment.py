@@ -25,7 +25,7 @@ class ParallelEnvExperiment(Experiment):
         render=False,
         write_loss=True,
         writer="tensorboard",
-        options=options,
+        options=None,
     ):
         self._name = name if name is not None else preset.name
         super().__init__(
@@ -86,7 +86,7 @@ class ParallelEnvExperiment(Experiment):
             if in_option: 
                 if options.terminate():
                     in_option = False
-                    
+
             self._frame += num_envs
             episodes_completed = state_array.done.type(torch.IntTensor).sum().item()
             completed_frames += num_envs

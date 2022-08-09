@@ -21,7 +21,7 @@ class SingleEnvExperiment(Experiment):
         render=False,
         write_loss=True,
         writer="tensorboard",
-        options=options,
+        options=None,
     ):
         self._name = name if name is not None else preset.name
         super().__init__(
