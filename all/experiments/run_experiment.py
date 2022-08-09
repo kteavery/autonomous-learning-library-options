@@ -15,7 +15,8 @@ def run_experiment(
         test_episodes=100,
         write_loss=True,
         writer="tensorboard",
-        loadfile=""
+        loadfile="",
+        options=None,
 ):
     if not isinstance(agents, list):
         agents = [agents]
@@ -41,6 +42,7 @@ def run_experiment(
                 render=render,
                 write_loss=write_loss,
                 writer=writer,
+                options=options,
             )
             print("train")
             print(loadfile)

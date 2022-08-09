@@ -25,6 +25,7 @@ class ParallelEnvExperiment(Experiment):
         render=False,
         write_loss=True,
         writer="tensorboard",
+        options=options,
     ):
         self._name = name if name is not None else preset.name
         super().__init__(
@@ -39,6 +40,7 @@ class ParallelEnvExperiment(Experiment):
         self._preset = preset
         self._agent = preset.agent(writer=self._writer, train_steps=train_steps)
         self._render = render
+        self._options = options
 
         # training state
         self._returns = []
@@ -72,9 +74,19 @@ class ParallelEnvExperiment(Experiment):
         start_time = time.time()
         completed_frames = 0
         _checkpoint_threshold = 0
+        in_option = False
         while not self._done(frames, episodes):
-            action = self._agent.act(state_array)
+            if in_option or options.initiate():
+                in_option = True
+                action = options.get_action()
+            else:
+                action = self._agent.act(state_array)
+
             state_array = self._env.step(action)
+            if in_option: 
+                if options.terminate():
+                    in_option = False
+                    
             self._frame += num_envs
             episodes_completed = state_array.done.type(torch.IntTensor).sum().item()
             completed_frames += num_envs

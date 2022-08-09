@@ -21,6 +21,7 @@ class SingleEnvExperiment(Experiment):
         render=False,
         write_loss=True,
         writer="tensorboard",
+        options=options,
     ):
         self._name = name if name is not None else preset.name
         super().__init__(
@@ -34,6 +35,7 @@ class SingleEnvExperiment(Experiment):
         self._frame = 1
         self._episode = 1
         self._checkpoint_threshold = 0
+        self._options = options
 
         if render:
             self._env.render(mode="human")
@@ -69,7 +71,14 @@ class SingleEnvExperiment(Experiment):
 
         # initialize the episode
         state = self._env.reset()
-        action = self._agent.act(state)
+        in_option = False
+
+        if options.initiate():
+            in_option = True
+            action = options.get_action()
+        else:
+            action = self._agent.act(state)
+
         returns = 0
 
         # loop until the episode is finished
@@ -77,7 +86,18 @@ class SingleEnvExperiment(Experiment):
             if self._render:
                 self._env.render()
             state = self._env.step(action)
-            action = self._agent.act(state)
+            
+            if in_option or options.initiate():
+                in_option = True
+                action = options.get_action()
+            else:
+                action = self._agent.act(state_array)
+
+            state_array = self._env.step(action)
+            if in_option: 
+                if options.terminate():
+                    in_option = False
+
             returns += state.reward
             self._frame += 1
 

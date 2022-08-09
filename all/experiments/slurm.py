@@ -25,6 +25,7 @@ class SlurmExperiment:
         loadfile="",
         nodelist="",
         sbatch_args=None,
+        options=None,
     ):
         if not isinstance(agents, list):
             agents = [agents]
@@ -43,6 +44,7 @@ class SlurmExperiment:
         self.logdir = logdir
         self.nodelist = nodelist
         self.loadfile = loadfile
+        self.options = options
         self.sbatch_args = sbatch_args or {}
         self.parse_args()
 
@@ -93,6 +95,7 @@ class SlurmExperiment:
             logdir=self.logdir,
             write_loss=self.write_loss,
             loadfile=loadfile,
+            options=self.options,
         )
 
     def queue_jobs(self):
@@ -110,7 +113,7 @@ class SlurmExperiment:
             "output": os.path.join(self.outdir, "all_%A_%a.out"),
             "error": os.path.join(self.outdir, "all_%A_%a.err"),
             "array": "0-" + str(num_experiments - 1),
-            "partition": "1080ti-short",
+            "partition": "gpu",
             "ntasks": 1,
             "mem-per-cpu": 4000,
             "gres": "gpu:1",
