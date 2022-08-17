@@ -91,9 +91,9 @@ class SingleEnvExperiment(Experiment):
                 in_option = True
                 action = self._options.get_action()
             else:
-                action = self._agent.act(state_array)
+                action = self._agent.act(state)
 
-            state_array = self._env.step(action)
+            state = self._env.step(action)
             if in_option: 
                 if self._options.terminate():
                     in_option = False
