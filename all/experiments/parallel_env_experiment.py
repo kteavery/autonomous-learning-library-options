@@ -76,15 +76,15 @@ class ParallelEnvExperiment(Experiment):
         _checkpoint_threshold = 0
         in_option = False
         while not self._done(frames, episodes):
-            if options != None and in_option or options.initiate():
+            if self._options != None and in_option or self._options.initiate():
                 in_option = True
-                action = options.get_action()
+                action = self._options.get_action()
             else:
                 action = self._agent.act(state_array)
 
             state_array = self._env.step(action)
-            if options != None and in_option: 
-                if options.terminate():
+            if self._options != None and in_option: 
+                if self._options.terminate():
                     in_option = False
 
             self._frame += num_envs

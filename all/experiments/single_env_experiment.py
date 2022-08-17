@@ -73,7 +73,7 @@ class SingleEnvExperiment(Experiment):
         state = self._env.reset()
         in_option = False
 
-        if options != None and options.initiate():
+        if self._options != None and self._options.initiate():
             in_option = True
             action = options.get_action()
         else:
