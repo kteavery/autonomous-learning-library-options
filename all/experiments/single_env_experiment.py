@@ -102,7 +102,7 @@ class SingleEnvExperiment(Experiment):
             print("action")
             print(action)
 
-            state = self._env.step(action)
+            #state = self._env.step(action)
             if in_option: 
                 if self._options.terminate():
                     in_option = False
