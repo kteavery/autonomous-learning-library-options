@@ -75,7 +75,7 @@ class SingleEnvExperiment(Experiment):
 
         if self._options != None and self._options.initiate():
             in_option = True
-            action = options.get_action()
+            action = self._options.get_action()
         else:
             action = self._agent.act(state)
 
@@ -87,15 +87,15 @@ class SingleEnvExperiment(Experiment):
                 self._env.render()
             state = self._env.step(action)
             
-            if in_option or options.initiate():
+            if in_option or self._options.initiate():
                 in_option = True
-                action = options.get_action()
+                action = self._options.get_action()
             else:
                 action = self._agent.act(state_array)
 
             state_array = self._env.step(action)
             if in_option: 
-                if options.terminate():
+                if self._options.terminate():
                     in_option = False
 
             returns += state.reward
