@@ -97,6 +97,11 @@ class SingleEnvExperiment(Experiment):
             else:
                 action = self._agent.act(state)
 
+            print("in_option")
+            print(in_option)
+            print("action")
+            print(action)
+
             state = self._env.step(action)
             if in_option: 
                 if self._options.terminate():
