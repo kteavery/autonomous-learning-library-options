@@ -76,15 +76,13 @@ class SingleEnvExperiment(Experiment):
         if self._options != None and self._options.initiate():
             in_option = True
             action = self._options.get_action()
-            print("in_option")
-            print(in_option)
-            print("action")
-            print(action)
         else:
             action = self._agent.act(state)
-            print("action")
-            print(action)
 
+        print("in_option")
+        print(in_option)
+        print("action")
+        print(action)
         returns = 0
 
         # loop until the episode is finished
@@ -110,7 +108,7 @@ class SingleEnvExperiment(Experiment):
             if self._frame >= self._checkpoint_threshold:  # checkpointing
                 print("Saving Checkpoint")
                 Experiment.save(self, "preset" + str(int(self._checkpoint_threshold)))
-                subprocess.call(["sh", "removeEvents.sh"])
+                #subprocess.call(["sh", "removeEvents.sh"])
 
                 if self._frame >= 1e6:
                     self._checkpoint_threshold += 1e6  # continue by 1M's
