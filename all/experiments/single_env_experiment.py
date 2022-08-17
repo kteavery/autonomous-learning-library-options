@@ -71,56 +71,65 @@ class SingleEnvExperiment(Experiment):
 
         # initialize the episode
         state = self._env.reset()
-        in_option = False
-
-        if self._options != None and self._options.initiate():
-            in_option = True
-            action = self._options.get_action()
-        else:
-            action = self._agent.act(state)
-
-        print("in_option")
-        print(in_option)
-        print("action")
-        print(action)
+        action = self._agent.act(state)
         returns = 0
+
+        # state = self._env.reset()
+        # in_option = False
+
+        # if self._options != None and self._options.initiate():
+        #     in_option = True
+        #     action = self._options.get_action()
+        # else:
+        #     action = self._agent.act(state)
+
+        # print("in_option")
+        # print(in_option)
+        # print("action")
+        # print(action)
+        # returns = 0
 
         # loop until the episode is finished
         while not state.done:
             if self._render:
                 self._env.render()
+
             state = self._env.step(action)
-            
-            if in_option or self._options.initiate():
-                in_option = True
-                action = self._options.get_action()
-            else:
-                action = self._agent.act(state)
-
-            print("in_option")
-            print(in_option)
-            print("action")
-            print(action)
-
-            #state = self._env.step(action)
-            if in_option: 
-                if self._options.terminate():
-                    in_option = False
-
+            action = self._agent.act(state)
             returns += state.reward
             self._frame += 1
+            # state = self._env.step(action)
+            
+            # if in_option or self._options.initiate():
+            #     in_option = True
+            #     action = self._options.get_action()
+            # else:
+            #     action = self._agent.act(state)
 
-            if self._frame >= self._checkpoint_threshold:  # checkpointing
-                print("Saving Checkpoint")
-                Experiment.save(self, "preset" + str(int(self._checkpoint_threshold)))
-                #subprocess.call(["sh", "removeEvents.sh"])
+            # print("in_option")
+            # print(in_option)
+            # print("action")
+            # print(action)
 
-                if self._frame >= 1e6:
-                    self._checkpoint_threshold += 1e6  # continue by 1M's
-                elif self._frame >= 1e5:
-                    self._checkpoint_threshold += 1e5  # continue by 100k's
-                else:
-                    self._checkpoint_threshold += 1e4  # walk up  by 10k's
+            # #state = self._env.step(action)
+            # if in_option: 
+            #     if self._options.terminate():
+            #         in_option = False
+
+            # returns += state.reward
+            # self._frame += 1
+
+            # if self._frame >= self._checkpoint_threshold:  # checkpointing
+            #     print("Saving Checkpoint")
+            #     Experiment.save(self, "preset" + str(int(self._checkpoint_threshold)))
+            #     #subprocess.call(["sh", "removeEvents.sh"])
+
+            #     if self._frame >= 1e6:
+            #         self._checkpoint_threshold += 1e6  # continue by 1M's
+            #     elif self._frame >= 1e5:
+            #         self._checkpoint_threshold += 1e5  # continue by 100k's
+            #     else:
+            #         self._checkpoint_threshold += 1e4  # walk up  by 10k's
 
         # stop the timer
         end_time = timer()
