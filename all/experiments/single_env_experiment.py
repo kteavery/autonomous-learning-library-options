@@ -113,7 +113,7 @@ class SingleEnvExperiment(Experiment):
 
             # #state = self._env.step(action)
             if in_option: 
-                if self._options.terminate():
+                if self._options.terminate(self._env):
                     in_option = False
 
             returns += state.reward
